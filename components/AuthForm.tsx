@@ -12,6 +12,7 @@ import { authFormSchema, parseStringify } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/userActions";
+import PlaidLink from "./PlaidLink";
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
@@ -27,7 +28,7 @@ const AuthForm = ({ type }: { type: string }) => {
       password: "",
       firstName: "",
       lastName: "",
-      address: "",
+      address1: "",
       city: "",
       postcode: "",
       dateOfBirth: "",
@@ -43,7 +44,20 @@ const AuthForm = ({ type }: { type: string }) => {
       //sign up with Appwrite & create pliad token
 
       if (type === "sign up") {
-        const newUser = await signUp(data);
+        const userData = {
+          firstName: data.firstName!,
+          lastName: data.lastName!,
+          address1: data.address1!,
+          city: data.city!,
+          state: data.country!,
+          postalCode: data.postcode!,
+          dateOfBirth: data.dateOfBirth!,
+          ssn: data.nationalInsurnceNumber!,
+          email: data.email,
+          password: data.password,
+        };
+
+        const newUser = await signUp(userData);
         setUser(newUser);
       } else {
         const respone = await signIn({
@@ -80,7 +94,9 @@ const AuthForm = ({ type }: { type: string }) => {
         </div>
       </header>
       {user ? (
-        <div className="flex flex-col gap-4"></div>
+        <div className="flex flex-col gap-4">
+          <PlaidLink user={user} variant="primary" />
+        </div>
       ) : (
         <>
           <Form {...form}>
@@ -104,7 +120,7 @@ const AuthForm = ({ type }: { type: string }) => {
                   </div>
                   <CustomInput
                     control={form.control}
-                    name="address"
+                    name="address1"
                     label="Address"
                     placeholder="Enter your Address"
                   />
